@@ -1703,9 +1703,9 @@ p {
   .s-card:nth-child(6) { top: 112px; z-index: 6; }
 
   /* Remove the icon pseudo-element on mobile for cleaner stack look */
-  .s-card::before {
+  /* .s-card::before {
     display: none;
-  }
+  } */
 
   /* Headings and text sizing for compact mobile cards */
   .s-card h3 {
