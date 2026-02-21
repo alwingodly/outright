@@ -673,120 +673,59 @@ if (footerSection && ftP1 && ftP2) {
 })();
 
 /* ─────────────────────────────────────────────
-   SERVICES MOBILE — SCROLL-DRIVEN CARD STACK
-   Paste at the bottom of script.js
+   MOBILE SERVICES — FIXED STACK ANIMATION
+   Paste at the END of your script.js
    ───────────────────────────────────────────── */
+
 (function () {
+  function isMobile() { return window.innerWidth <= 767; }
 
-  /* ── Only on mobile ── */
-  if (window.innerWidth > 767) return;
+  const sGrid = document.querySelector('.s-grid');
+  if (!sGrid) return;
 
-  const section = document.querySelector('.services');
-  const grid    = section && section.querySelector('.s-grid');
-  if (!section || !grid) return;
+  const cards = Array.from(sGrid.querySelectorAll('.s-card'));
+  if (!cards.length) return;
 
-  const cards = Array.from(grid.querySelectorAll('.s-card'));
-  const n = cards.length;
-  if (n < 2) return;
+  // How much each buried card shrinks (0.92 = subtle, keeps top edge flush)
+  const MIN_SCALE = 0.92;
+  // Pixels of scroll past sticky point before card reaches full shrink
+  const SHRINK_RANGE = 200;
 
-  /* ── 1. Wrap the section so we can add scroll budget ── */
-  const wrapper = document.createElement('div');
-  wrapper.id = 'services-sticky-wrapper';
-  section.parentNode.insertBefore(wrapper, section);
-  wrapper.appendChild(section);
+  function updateStack() {
+    if (!isMobile()) {
+      cards.forEach(c => { c.style.transform = ''; });
+      return;
+    }
 
-  /* ── 2. Measure after layout ── */
-  function measure() {
-    const gridStyle  = getComputedStyle(grid);
-    const gap        = parseFloat(gridStyle.rowGap) || 16;
-    const cardH      = cards[0].offsetHeight;
-    const perCard    = cardH + gap;          // scroll pixels per card transition
-    const budget     = (n - 1) * perCard;   // total extra scroll budget
+    cards.forEach((card) => {
+      const rect      = card.getBoundingClientRect();
+      const stickyTop = 80; // must match CSS top value
 
-    /* Natural section height (before adding budget) */
-    const naturalH = section.offsetHeight;
+      // How many px has this card been scrolled PAST its sticky position
+      const buried = stickyTop - rect.top;
 
-    /* Wrapper must be tall enough to hold natural section + stacking budget */
-    wrapper.style.height = (naturalH + budget) + 'px';
+      if (buried > 0) {
+        // Card is pinned — shrink it slightly so new card looks "on top"
+        const progress = Math.min(buried / SHRINK_RANGE, 1);
+        const scale    = 1 - (1 - MIN_SCALE) * progress;
 
-    /* Set z-indices: later cards sit on top of earlier ones */
-    cards.forEach((c, i) => { c.style.zIndex = i + 1; });
-
-    return { perCard, budget, cardH };
-  }
-
-  let dims = measure();
-
-  /* ── 3. Drive transforms from scroll position ── */
-  function update() {
-    const wrapperTop = wrapper.getBoundingClientRect().top;
-
-    /*
-     * progress = how far we've scrolled PAST the point where the section
-     * sticks (wrapperTop crosses 0).
-     * 0      → nothing stacked yet
-     * budget → all cards fully stacked
-     */
-    const progress = Math.max(0, Math.min(-wrapperTop, dims.budget));
-
-    cards.forEach((card, i) => {
-      if (i === 0) return; // first card never moves — it's the anchor
-
-      /*
-       * Card i animates in the scroll range:
-       *   start = (i - 1) * perCard
-       *   end   =  i      * perCard
-       *
-       * When fully stacked, card i needs to have moved UP by
-       * (i * perCard) so it sits exactly on top of card 0.
-       */
-      const start    = (i - 1) * dims.perCard;
-      const end      =  i      * dims.perCard;
-      const local    = Math.max(0, Math.min(progress - start, dims.perCard));
-      const ratio    = local / dims.perCard;            // 0 → 1
-      const totalUp  = i * dims.perCard;
-
-      card.style.transform = `translateY(${-totalUp * ratio}px)`;
-
-      /* Visual helpers */
-      const inFlight = local > 0 && local < dims.perCard;
-      const done     = local >= dims.perCard;
-
-      card.classList.toggle('stacking', inFlight);
-      card.classList.toggle('buried',   false);           // reset
-
-      /* Cards below the one in flight get buried */
-      if (inFlight) {
-        for (let j = 0; j < i; j++) cards[j].classList.add('buried');
-      }
-      if (done) {
-        card.classList.remove('stacking');
+        // translateY keeps the TOP EDGE flush with the sticky position
+        // so the incoming card fully covers the top of the buried card
+        card.style.transform = `scale(${scale.toFixed(4)})`;
+      } else {
+        card.style.transform = 'scale(1)';
       }
     });
   }
 
-  window.addEventListener('scroll', update, { passive: true });
-  update(); // initial paint
-
-  /* ── 4. Teardown on resize to desktop ── */
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 767) {
-      /* Restore DOM: move section back out of wrapper */
-      wrapper.parentNode.insertBefore(section, wrapper);
-      wrapper.parentNode.removeChild(wrapper);
-      section.style.position = '';
-      section.style.top      = '';
-      cards.forEach(c => {
-        c.style.transform = '';
-        c.style.zIndex    = '';
-        c.classList.remove('stacking', 'buried');
-      });
-      window.removeEventListener('scroll', update);
-    } else {
-      /* Re-measure if layout changed on mobile (orientation flip) */
-      dims = measure();
-      update();
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => { updateStack(); ticking = false; });
+      ticking = true;
     }
-  });
+  }, { passive: true });
 
+  window.addEventListener('resize', updateStack, { passive: true });
+  updateStack();
 })();

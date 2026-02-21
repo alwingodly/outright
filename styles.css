@@ -1662,53 +1662,68 @@ p {
     width: 52px;
     height: 62px;
   }
-
  
 
 
 
-
-
-
-
-
-  /* ─────────────────────────────────────────────
-   SERVICES MOBILE — SCROLL-DRIVEN CARD STACK
-   Add inside / after your @media (max-width: 767px)
-   ───────────────────────────────────────────── */
-
-
-  #services-sticky-wrapper {
-    position: relative;
+   /* Give the section enough scroll height for the stack effect */
+  .services {
+    padding-bottom: 40px;
   }
 
-  #services-sticky-wrapper > .services {
+  /* Turn the grid into a sticky stack */
+  .s-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* Extra bottom space so last card fully enters view */
+    padding-bottom: 80px;
+  }
+  
+  .s-card {
     position: sticky;
-    top: 0;
-    z-index: 10;
-    background: #fff;
-  }
-
-  #services-sticky-wrapper .s-grid {
-    overflow: visible;
-    position: relative;
-  }
-
-  #services-sticky-wrapper .s-card {
-    position: relative;
+    border-radius: 20px !important;
+    top: 80px;
+    /* Cards start fully visible bottom padding */
+    padding: 24px 24px 28px;
+    min-height: 220px;
+    margin-bottom: 0;
     will-change: transform;
+    transform-origin: top center;
+    /* Smooth scale transition driven by JS */
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   }
 
-  #services-sticky-wrapper .s-card.stacking {
-    box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.14);
+  /* Each card sticks at a slightly lower offset so they visibly stack */
+  .s-card:nth-child(1) { top: 72px;  z-index: 1; }
+  .s-card:nth-child(2) { top: 80px;  z-index: 2; }
+  .s-card:nth-child(3) { top: 88px;  z-index: 3; }
+  .s-card:nth-child(4) { top: 96px;  z-index: 4; }
+  .s-card:nth-child(5) { top: 104px; z-index: 5; }
+  .s-card:nth-child(6) { top: 112px; z-index: 6; }
+
+  /* Remove the icon pseudo-element on mobile for cleaner stack look */
+  .s-card::before {
+    display: none;
   }
 
-  #services-sticky-wrapper .s-card.buried {
-    filter: brightness(0.96);
+  /* Headings and text sizing for compact mobile cards */
+  .s-card h3 {
+    font-size: 26px;
+    line-height: 1.2;
   }
+
+  .s-card p {
+    font-size: 15px;
+    line-height: 1.55;
+    margin-top: 10px;
+  }
+
+  /* State class applied by JS when a card is being "buried" under the next */
+  .s-card.stacked-under {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+ }
 }
-
-
 @media (max-width: 479px) {
   .hero {
     padding: 100px 0 60px;
@@ -1743,3 +1758,4 @@ p {
     height: 52px;
   }
 }
+
