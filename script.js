@@ -699,7 +699,7 @@ if (footerSection && ftP1 && ftP2) {
 
     cards.forEach((card) => {
       const rect      = card.getBoundingClientRect();
-      const stickyTop = 80; // must match CSS top value
+      const stickyTop = 30; // must match CSS top value
 
       // How many px has this card been scrolled PAST its sticky position
       const buried = stickyTop - rect.top;
