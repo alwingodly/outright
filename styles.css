@@ -1662,34 +1662,53 @@ p {
     width: 52px;
     height: 62px;
   }
-  /* Grid becomes a sized container during stacking */
-  .s-grid.stack-mode {
+
+ 
+
+
+
+
+
+
+
+
+  /* ─────────────────────────────────────────────
+   SERVICES MOBILE — SCROLL-DRIVEN CARD STACK
+   Add inside / after your @media (max-width: 767px)
+   ───────────────────────────────────────────── */
+
+
+  #services-sticky-wrapper {
     position: relative;
-    /* height is set by JS to match the original column height */
   }
 
-  /* Each card is pulled out of flow and pinned to its measured position */
-  .s-card.stack-item {
-    position: absolute;
-    margin: 0 !important;
+  #services-sticky-wrapper > .services {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+  }
+
+  #services-sticky-wrapper .s-grid {
+    overflow: visible;
+    position: relative;
+  }
+
+  #services-sticky-wrapper .s-card {
+    position: relative;
     will-change: transform;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   }
 
-  .s-card.stack-slide {
-    transition:
-      transform 0.54s cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow 0.54s ease;
-    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.18);
+  #services-sticky-wrapper .s-card.stacking {
+    box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.14);
   }
 
-  .s-card.stack-buried {
-    transition:
-      transform 0.54s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0.54s ease;
-    opacity: 0.92;
+  #services-sticky-wrapper .s-card.buried {
+    filter: brightness(0.96);
   }
 }
+
+
 @media (max-width: 479px) {
   .hero {
     padding: 100px 0 60px;
