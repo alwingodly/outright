@@ -1375,7 +1375,6 @@ p {
   }
 }
 
-
 /* FOOTER */
 .footer {
   padding: 120px 0 30px;
@@ -1663,6 +1662,33 @@ p {
     width: 52px;
     height: 62px;
   }
+  /* Grid becomes a sized container during stacking */
+  .s-grid.stack-mode {
+    position: relative;
+    /* height is set by JS to match the original column height */
+  }
+
+  /* Each card is pulled out of flow and pinned to its measured position */
+  .s-card.stack-item {
+    position: absolute;
+    margin: 0 !important;
+    will-change: transform;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .s-card.stack-slide {
+    transition:
+      transform 0.54s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.54s ease;
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.18);
+  }
+
+  .s-card.stack-buried {
+    transition:
+      transform 0.54s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.54s ease;
+    opacity: 0.92;
+  }
 }
 @media (max-width: 479px) {
   .hero {
@@ -1698,4 +1724,3 @@ p {
     height: 52px;
   }
 }
-

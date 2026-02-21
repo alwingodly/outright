@@ -671,3 +671,157 @@ if (footerSection && ftP1 && ftP2) {
   }, { threshold: 0.15 });
   mobCards.forEach(c => mobObs.observe(c));
 })();
+
+/* ─────────────────────────────────────────────
+   SERVICES MOBILE — CARD STACK ON SCROLL UP
+   Paste this block at the bottom of script.js
+   ───────────────────────────────────────────── */
+(function () {
+  /* Only active on mobile widths */
+  function isMobile() { return window.innerWidth <= 767; }
+
+  const section = document.querySelector('.services');
+  const grid    = section && section.querySelector('.s-grid');
+  if (!section || !grid) return;
+
+  const cards = Array.from(grid.querySelectorAll('.s-card'));
+  if (cards.length < 2) return;
+
+  /*
+   * phase:
+   *  'idle'    – watching for the trigger
+   *  'running' – stacking animation in progress (scroll locked)
+   *  'done'    – animation complete, never triggers again until resize
+   */
+  let phase = 'idle';
+  let lastScrollY = window.scrollY;
+
+  /* ── Scroll-lock helpers (touch + wheel + keyboard) ── */
+  const LOCK_KEYS = [38, 40, 33, 34, 36, 35]; // up, down, pgup, pgdn, home, end
+  const stopEvent  = (e) => e.preventDefault();
+  const stopKey    = (e) => { if (LOCK_KEYS.includes(e.keyCode)) e.preventDefault(); };
+
+  function lockScroll() {
+    document.addEventListener('touchmove',  stopEvent, { passive: false });
+    document.addEventListener('wheel',      stopEvent, { passive: false });
+    document.addEventListener('keydown',    stopKey);
+  }
+  function unlockScroll() {
+    document.removeEventListener('touchmove',  stopEvent);
+    document.removeEventListener('wheel',      stopEvent);
+    document.removeEventListener('keydown',    stopKey);
+  }
+
+  /* ── Scroll watcher ── */
+  function onScroll() {
+    if (phase !== 'idle') { lastScrollY = window.scrollY; return; }
+    if (!isMobile())       { lastScrollY = window.scrollY; return; }
+
+    const goingUp = window.scrollY < lastScrollY;
+    lastScrollY   = window.scrollY;
+    if (!goingUp) return;
+
+    /* Trigger when scrolling UP and the first card is at or near the top of viewport */
+    const firstCardRect = cards[0].getBoundingClientRect();
+    const sectionRect   = section.getBoundingClientRect();
+
+    const firstCardNearTop = firstCardRect.top <= 72 && firstCardRect.top > -firstCardRect.height;
+    const sectionVisible   = sectionRect.bottom > 0;
+
+    if (firstCardNearTop && sectionVisible) {
+      runStackAnimation();
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* ── Main stacking animation ── */
+  function runStackAnimation() {
+    phase = 'running';
+    lockScroll();
+
+    /* 1. Snapshot every card's position relative to the grid */
+    const gridBCR   = grid.getBoundingClientRect();
+    const snapshots = cards.map((card) => {
+      const r = card.getBoundingClientRect();
+      return {
+        top:    r.top  - gridBCR.top,
+        left:   r.left - gridBCR.left,
+        width:  r.width,
+        height: r.height,
+      };
+    });
+
+    /* 2. Size the grid so it doesn't collapse when children go absolute */
+    const lastSnap = snapshots[snapshots.length - 1];
+    grid.classList.add('stack-mode');
+    grid.style.height = (lastSnap.top + lastSnap.height) + 'px';
+
+    /* 3. Pin every card at its current snapshot position */
+    cards.forEach((card, i) => {
+      card.classList.add('stack-item');
+      card.style.top    = snapshots[i].top    + 'px';
+      card.style.left   = snapshots[i].left   + 'px';
+      card.style.width  = snapshots[i].width  + 'px';
+      card.style.height = snapshots[i].height + 'px';
+      card.style.zIndex = i + 1;
+    });
+
+    /* 4. Slide cards 1, 2, 3 … up to card[0]'s position one by one */
+    let idx = 1;
+
+    function slideNext() {
+      if (idx >= cards.length) {
+        /* All cards stacked — brief pause then unlock */
+        setTimeout(() => {
+          unlockScroll();
+          phase = 'done';
+          /* Stop watching scroll — animation is a one-shot */
+          window.removeEventListener('scroll', onScroll);
+        }, 380);
+        return;
+      }
+
+      const card = cards[idx];
+
+      /* Distance from this card's original top to card[0]'s top */
+      const dy = snapshots[idx].top - snapshots[0].top;
+
+      /* Mark the card as "flying" */
+      card.classList.add('stack-slide');
+      /* Bring it visually above everything that came before */
+      card.style.zIndex = cards.length + idx + 10;
+      /* Slide it up */
+      card.style.transform = `translateY(-${dy}px)`;
+
+      /* Mark the card beneath as buried (slight opacity fade) */
+      if (idx - 1 >= 0) {
+        cards[idx - 1].classList.add('stack-buried');
+      }
+
+      idx++;
+      /* Each card slides 520ms after the previous one starts */
+      setTimeout(slideNext, 520);
+    }
+
+    /* Small leading pause so the scroll-lock feels intentional */
+    setTimeout(slideNext, 120);
+  }
+
+  /* ── Reset on resize (orientation change etc.) ── */
+  window.addEventListener('resize', () => {
+    if (phase === 'done' || phase === 'running') {
+      /* Clean up DOM state */
+      unlockScroll();
+      grid.classList.remove('stack-mode');
+      grid.style.height = '';
+      cards.forEach((card) => {
+        card.classList.remove('stack-item', 'stack-slide', 'stack-buried');
+        card.style.cssText = '';
+      });
+      phase = 'idle';
+      lastScrollY = window.scrollY;
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+  });
+})();
