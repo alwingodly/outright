@@ -4,7 +4,6 @@
 (function () {
   const style = document.createElement('style');
   style.textContent = `
-    /* Base hidden states */
     .hero-sub,
     .hero-title-wrap,
     .hero-desc,
@@ -13,83 +12,63 @@
       transform: translateY(28px);
     }
     .hero-title-wrap { transform: translateY(40px); }
-
-    /* Particle chips start hidden */
     .hero .p1, .hero .p2, .hero .p3 {
       opacity: 0;
       transform: scale(0.6) rotate(0deg);
     }
-
-    /* Animated in states */
     .hero-arrive .hero-sub {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.65s cubic-bezier(.22,.61,.36,1),
-                  transform 0.65s cubic-bezier(.22,.61,.36,1);
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.65s cubic-bezier(.22,.61,.36,1), transform 0.65s cubic-bezier(.22,.61,.36,1);
       transition-delay: 0.05s;
     }
     .hero-arrive .hero-title-wrap {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.8s cubic-bezier(.22,.61,.36,1),
-                  transform 0.8s cubic-bezier(.22,.61,.36,1);
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.8s cubic-bezier(.22,.61,.36,1), transform 0.8s cubic-bezier(.22,.61,.36,1);
       transition-delay: 0.18s;
     }
     .hero-arrive .hero-desc {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.65s cubic-bezier(.22,.61,.36,1),
-                  transform 0.65s cubic-bezier(.22,.61,.36,1);
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.65s cubic-bezier(.22,.61,.36,1), transform 0.65s cubic-bezier(.22,.61,.36,1);
       transition-delay: 0.38s;
     }
     .hero-arrive .glow-btn {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s cubic-bezier(.22,.61,.36,1),
-                  transform 0.6s cubic-bezier(.22,.61,.36,1);
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.6s cubic-bezier(.22,.61,.36,1), transform 0.6s cubic-bezier(.22,.61,.36,1);
       transition-delay: 0.54s;
     }
-    /* Particle chips float in with spin */
     .hero-arrive .hero .p1 {
-      opacity: 1;
-      transform: scale(1) rotate(-30deg);
+      opacity: 1; transform: scale(1) rotate(-30deg);
       transition: opacity 0.7s ease, transform 0.9s cubic-bezier(.34,1.56,.64,1);
       transition-delay: 0.65s;
     }
     .hero-arrive .hero .p2 {
-      opacity: 1;
-      transform: scale(1) rotate(20deg);
+      opacity: 1; transform: scale(1) rotate(20deg);
       transition: opacity 0.7s ease, transform 0.9s cubic-bezier(.34,1.56,.64,1);
       transition-delay: 0.78s;
     }
     .hero-arrive .hero .p3 {
-      opacity: 1;
-      transform: scale(1) rotate(-15deg);
+      opacity: 1; transform: scale(1) rotate(-15deg);
       transition: opacity 0.7s ease, transform 0.9s cubic-bezier(.34,1.56,.64,1);
       transition-delay: 0.88s;
     }
   `;
   document.head.appendChild(style);
 
-  // Trigger on next frame so initial hidden state paints first
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       document.documentElement.classList.add('hero-arrive');
-
-      // After arrival animation finishes, remove CSS transitions from particles
-      // so the JS parallax mousemove can control them freely without lag
       setTimeout(() => {
         document.querySelectorAll('.hero .p1, .hero .p2, .hero .p3').forEach(p => {
           p.style.transition = 'none';
         });
-      }, 1800); // wait for longest arrival animation to complete
+      }, 1800);
     });
   });
 })();
 
 
 /* ─────────────────────────────────────────────
-   GLOW BUTTON — SPARKLES BEHIND BUTTON, ABOVE & BELOW MOUSE X
+   GLOW BUTTON — SPARKLES
    ───────────────────────────────────────────── */
 (function () {
   const glowBtn   = document.querySelector('.glow-btn');
@@ -99,21 +78,10 @@
 
   if (!glowBtn || !glowInner || !starsEl || !arrowSvg) return;
 
-  // ── Push stars BEHIND the button visually ──
-  // .glow-btn-outer already has z-index:1, so z-index:0 on .stars sits behind it
   starsEl.style.zIndex = '0';
 
-  // ── Snow-only colour palette ──
-  const COLORS = [
-    '#ffffff',
-    'rgba(255,255,255,0.9)',
-    'rgba(220,240,255,0.95)',
-    'rgba(200,230,255,0.85)',
-    '#f0f8ff',
-    '#e8f4ff',
-  ];
+  const COLORS = ['#ffffff','rgba(255,255,255,0.9)','rgba(220,240,255,0.95)','rgba(200,230,255,0.85)','#f0f8ff','#e8f4ff'];
 
-  // Build stars: half burst upward, half burst downward
   function makeStars() {
     starsEl.innerHTML = '';
     const COUNT = 14;
@@ -121,34 +89,21 @@
       const goUp = i < COUNT / 2;
       const star = document.createElement('span');
       star.className = 'star';
-
       const sz    = (3.5 + Math.random() * 6).toFixed(1) + 'px';
       const clr   = COLORS[Math.floor(Math.random() * COLORS.length)];
       const dur   = (1.3 + Math.random() * 1.1).toFixed(2) + 's';
       const delay = (Math.random() * 1.0).toFixed(2) + 's';
-      // Very tight horizontal spread — sparkles stay directly above/below
       const spreadX = (Math.random() * 14 - 7).toFixed(1);
-
       if (goUp) {
         const r1 = (16 + Math.random() * 12).toFixed(1);
         const r2 = (32 + Math.random() * 18).toFixed(1);
         const r3 = (50 + Math.random() * 22).toFixed(1);
-        star.style.cssText = `
-          --sz:${sz};--clr:${clr};--dur:${dur};--delay:${delay};
-          --tx:${spreadX}px;  --ty:-${r1}px;
-          --tx2:${spreadX}px; --ty2:-${r2}px;
-          --tx3:${spreadX}px; --ty3:-${r3}px;
-        `;
+        star.style.cssText = `--sz:${sz};--clr:${clr};--dur:${dur};--delay:${delay};--tx:${spreadX}px;--ty:-${r1}px;--tx2:${spreadX}px;--ty2:-${r2}px;--tx3:${spreadX}px;--ty3:-${r3}px;`;
       } else {
         const d1 = (16 + Math.random() * 12).toFixed(1);
         const d2 = (32 + Math.random() * 18).toFixed(1);
         const d3 = (50 + Math.random() * 22).toFixed(1);
-        star.style.cssText = `
-          --sz:${sz};--clr:${clr};--dur:${dur};--delay:${delay};
-          --tx:${spreadX}px;  --ty:${d1}px;
-          --tx2:${spreadX}px; --ty2:${d2}px;
-          --tx3:${spreadX}px; --ty3:${d3}px;
-        `;
+        star.style.cssText = `--sz:${sz};--clr:${clr};--dur:${dur};--delay:${delay};--tx:${spreadX}px;--ty:${d1}px;--tx2:${spreadX}px;--ty2:${d2}px;--tx3:${spreadX}px;--ty3:${d3}px;`;
       }
       starsEl.appendChild(star);
     }
@@ -156,12 +111,7 @@
 
   makeStars();
 
-  // ── Smooth mouse-X tracking across full button width ──
-  let targetX  = 0;
-  let currentX = 0;
-  let centreY  = 0;
-  let trackRaf = null;
-  let isHovered = false;
+  let targetX = 0, currentX = 0, centreY = 0, trackRaf = null, isHovered = false;
 
   function trackLoop() {
     if (!isHovered) return;
@@ -171,15 +121,12 @@
   }
 
   function initPosition(e) {
-    const rect   = glowBtn.getBoundingClientRect();
-    centreY      = rect.height / 2;
-    starsEl.style.top       = centreY + 'px';
+    const rect = glowBtn.getBoundingClientRect();
+    centreY = rect.height / 2;
+    starsEl.style.top = centreY + 'px';
     starsEl.style.transform = 'none';
-
-    // Seed at mouse X so there's no snap on enter
     const mouseX = e ? e.clientX - rect.left : rect.width / 2;
-    currentX     = mouseX;
-    targetX      = mouseX;
+    currentX = mouseX; targetX = mouseX;
     starsEl.style.left = currentX + 'px';
   }
 
@@ -188,18 +135,14 @@
     glowInner.style.background  = '#b4dbff';
     glowInner.style.borderColor = '#b4dbff';
     arrowSvg.style.transform    = 'translateX(5px)';
-
     initPosition(e);
     if (trackRaf) cancelAnimationFrame(trackRaf);
     trackRaf = requestAnimationFrame(trackLoop);
   });
-
   glowBtn.addEventListener('mousemove', (e) => {
     const rect = glowBtn.getBoundingClientRect();
-    // Directly follow mouse X — full left-to-right range
     targetX = e.clientX - rect.left;
   });
-
   glowBtn.addEventListener('mouseleave', () => {
     isHovered = false;
     glowInner.style.background  = '#c6ff7c';
@@ -207,13 +150,13 @@
     arrowSvg.style.transform    = 'translateX(0)';
     if (trackRaf) cancelAnimationFrame(trackRaf);
   });
-
   window.addEventListener('resize', () => { makeStars(); });
   window.addEventListener('load',   () => { initPosition(null); });
 })();
 
+
 /* ─────────────────────────────────────────────
-   GLOW BUTTON — SMALL SOFT SNOW LIGHT
+   GLOW BUTTON — SOFT SNOW LIGHT
    ───────────────────────────────────────────── */
 (function () {
   const glowBtn   = document.querySelector('.glow-btn');
@@ -222,68 +165,48 @@
 
   const CW = 340, CH = 220;
   const canvas = document.createElement('canvas');
-  canvas.width  = CW;
-  canvas.height = CH;
-  canvas.style.cssText = `
-    position:absolute;
-    top:50%; left:50%;
-    width:${CW}px; height:${CH}px;
-    margin-left:${-CW / 2}px;
-    margin-top:${-CH / 2}px;
-    pointer-events:none;
-    z-index:0;
-  `;
+  canvas.width = CW; canvas.height = CH;
+  canvas.style.cssText = `position:absolute;top:50%;left:50%;width:${CW}px;height:${CH}px;margin-left:${-CW/2}px;margin-top:${-CH/2}px;pointer-events:none;z-index:0;`;
   glowBtn.insertBefore(canvas, glowBtn.firstChild);
   const ctx = canvas.getContext('2d');
 
   function drawGlow(cx, alpha) {
     ctx.clearRect(0, 0, CW, CH);
     if (alpha < 0.01) return;
-    const cy = CH / 2;
-    const rx = CW * 0.36, ry = CH * 0.58;
+    const cy = CH / 2, rx = CW * 0.36, ry = CH * 0.58;
     ctx.save();
     ctx.translate(cx, cy);
     ctx.scale(1, ry / rx);
-    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
-    g.addColorStop(0,    `rgba(255,255,255,${0.28 * alpha})`);
-    g.addColorStop(0.35, `rgba(220,235,255,${0.13 * alpha})`);
-    g.addColorStop(0.7,  `rgba(180,210,255,${0.04 * alpha})`);
+    const g = ctx.createRadialGradient(0,0,0,0,0,rx);
+    g.addColorStop(0,    `rgba(255,255,255,${0.28*alpha})`);
+    g.addColorStop(0.35, `rgba(220,235,255,${0.13*alpha})`);
+    g.addColorStop(0.7,  `rgba(180,210,255,${0.04*alpha})`);
     g.addColorStop(1,    `rgba(160,200,255,0)`);
-    ctx.beginPath();
-    ctx.arc(0, 0, rx, 0, Math.PI * 2);
-    ctx.fillStyle = g;
-    ctx.fill();
-    ctx.restore();
+    ctx.beginPath(); ctx.arc(0,0,rx,0,Math.PI*2);
+    ctx.fillStyle = g; ctx.fill(); ctx.restore();
   }
 
-  let targetX = CW / 2, currentX = CW / 2;
-  let alpha = 0, targetAlpha = 0;
+  let targetX = CW/2, currentX = CW/2, alpha = 0, targetAlpha = 0;
   let isHovered = false, raf = null, fadeTimer = null;
 
   function loop() {
-    currentX += (targetX     - currentX) * 0.10;
-    alpha    += (targetAlpha - alpha)    * 0.08;
-    ctx.clearRect(0, 0, CW, CH);
-    drawGlow(currentX, alpha);
+    currentX += (targetX - currentX) * 0.10;
+    alpha    += (targetAlpha - alpha) * 0.08;
+    ctx.clearRect(0,0,CW,CH); drawGlow(currentX, alpha);
     raf = requestAnimationFrame(loop);
   }
-
   function initPos(e) {
     const rect = glowBtn.getBoundingClientRect();
-    const mx   = e ? e.clientX - rect.left : rect.width / 2;
-    currentX   = mx - rect.width / 2 + CW / 2;
-    targetX    = currentX;
+    const mx = e ? e.clientX - rect.left : rect.width / 2;
+    currentX = mx - rect.width/2 + CW/2; targetX = currentX;
   }
-
   glowBtn.addEventListener('mouseenter', (e) => {
-    isHovered = true; targetAlpha = 1;
-    clearTimeout(fadeTimer);
-    initPos(e);
-    if (!raf) raf = requestAnimationFrame(loop);
+    isHovered = true; targetAlpha = 1; clearTimeout(fadeTimer);
+    initPos(e); if (!raf) raf = requestAnimationFrame(loop);
   });
   glowBtn.addEventListener('mousemove', (e) => {
     const rect = glowBtn.getBoundingClientRect();
-    targetX = e.clientX - rect.left - rect.width / 2 + CW / 2;
+    targetX = e.clientX - rect.left - rect.width/2 + CW/2;
   });
   glowBtn.addEventListener('mouseleave', () => {
     isHovered = false; targetAlpha = 0;
@@ -293,7 +216,6 @@
   });
   window.addEventListener('load', () => initPos(null));
 })();
-
 
 
 /* ─────────────────────────────────────────────
@@ -331,72 +253,46 @@ counters.forEach(c => counterObs.observe(c));
 
 
 /* ─────────────────────────────────────────────
-   HERO PARTICLE PARALLAX — SMOOTH RAF LOOP
-   Movement pattern:
-   Mouse RIGHT  → Strategy LEFT,  Marketing RIGHT, Proven Success UP
-   Mouse LEFT   → Strategy RIGHT, Marketing LEFT,  Proven Success DOWN
-   Mouse UP     → Strategy DOWN,  Marketing UP,    Proven Success LEFT
-   Mouse DOWN   → Strategy UP,    Marketing DOWN,  Proven Success RIGHT
+   HERO PARTICLE PARALLAX
    ───────────────────────────────────────────── */
 const hero      = document.querySelector('.hero');
 const particles = document.querySelectorAll('.hero .p1,.hero .p2,.hero .p3');
 if (hero && particles.length) {
-  const STRENGTH = 0.06;
-  const LERP     = 0.05;
-
-  let targetMX = 0, targetMY = 0;
-  let currentMX = 0, currentMY = 0;
-  let heroRaf = null;
+  const STRENGTH = 0.06, LERP = 0.05;
+  let targetMX = 0, targetMY = 0, currentMX = 0, currentMY = 0;
 
   function heroParallaxLoop() {
-    // Smooth interpolation toward target
     currentMX += (targetMX - currentMX) * LERP;
     currentMY += (targetMY - currentMY) * LERP;
-
-    const mx = currentMX;
-    const my = currentMY;
-
-    // p1 = Strategy: opposite direction
-    if (particles[0]) particles[0].style.transform = `translate(${-mx}px,${-my}px) rotate(${-30 + mx * 0.03}deg)`;
-    // p2 = Proven Success: perpendicular (mouse right → up, mouse down → right)
-    if (particles[1]) particles[1].style.transform = `translate(${-my}px,${mx}px) rotate(${20 + my * 0.03}deg)`;
-    // p3 = Marketing: same direction as mouse
-    if (particles[2]) particles[2].style.transform = `translate(${mx}px,${my}px) rotate(${-15 + mx * 0.03}deg)`;
-
-    heroRaf = requestAnimationFrame(heroParallaxLoop);
+    if (particles[0]) particles[0].style.transform = `translate(${-currentMX}px,${-currentMY}px) rotate(${-30+currentMX*0.03}deg)`;
+    if (particles[1]) particles[1].style.transform = `translate(${-currentMY}px,${currentMX}px) rotate(${20+currentMY*0.03}deg)`;
+    if (particles[2]) particles[2].style.transform = `translate(${currentMX}px,${currentMY}px) rotate(${-15+currentMX*0.03}deg)`;
+    requestAnimationFrame(heroParallaxLoop);
   }
-
-  // Start loop immediately — always running for instant response
-  heroRaf = requestAnimationFrame(heroParallaxLoop);
+  requestAnimationFrame(heroParallaxLoop);
 
   hero.addEventListener('mousemove', (e) => {
     const rect = hero.getBoundingClientRect();
     targetMX = (e.clientX - rect.left - rect.width  / 2) * STRENGTH;
     targetMY = (e.clientY - rect.top  - rect.height / 2) * STRENGTH;
   });
-
-  hero.addEventListener('mouseleave', () => {
-    targetMX = 0;
-    targetMY = 0;
-    // RAF loop keeps running and will smoothly ease back to 0
-    // No need to cancel — it auto-settles
-  });
+  hero.addEventListener('mouseleave', () => { targetMX = 0; targetMY = 0; });
 }
 
 
 /* ─────────────────────────────────────────────
    ABOUT SECTION PARTICLE PARALLAX
    ───────────────────────────────────────────── */
-const aboutSection    = document.querySelector('.about');
-const aboutParticles  = document.querySelectorAll('.about-p1,.about-p2,.about-p3');
-const aboutPhoto      = document.querySelector('.about-photo');
+const aboutSection   = document.querySelector('.about');
+const aboutParticles = document.querySelectorAll('.about-p1,.about-p2,.about-p3');
+const aboutPhoto     = document.querySelector('.about-photo');
 if (aboutSection) {
   aboutSection.addEventListener('mousemove', (e) => {
     const rect = aboutSection.getBoundingClientRect();
     const mx = (e.clientX - rect.left - rect.width  / 2) * 0.12;
     const my = (e.clientY - rect.top  - rect.height / 2) * 0.12;
     if (aboutParticles[0]) aboutParticles[0].style.transform = `translate(${mx}px,${my}px) rotate(${-20+mx*0.05}deg)`;
-    if (aboutParticles[1]) aboutParticles[1].style.transform = `translate(${my}px,${mx}px) rotate(${18 +my*0.05}deg)`;
+    if (aboutParticles[1]) aboutParticles[1].style.transform = `translate(${my}px,${mx}px) rotate(${18+my*0.05}deg)`;
     if (aboutParticles[2]) aboutParticles[2].style.transform = `translate(${-my}px,${mx}px) rotate(${-12+mx*0.05}deg)`;
     if (aboutPhoto) aboutPhoto.style.transform = `rotate(-5deg) translate(${mx*0.3}px,${my*0.3}px)`;
   });
@@ -423,8 +319,7 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1 });
 revealEls.forEach(el => {
-  el.style.opacity    = '0';
-  el.style.transform  = 'translateY(30px)';
+  el.style.opacity = '0'; el.style.transform = 'translateY(30px)';
   el.style.transition = 'opacity .6s ease, transform .6s ease';
   revealObserver.observe(el);
 });
@@ -433,18 +328,71 @@ revealEls.forEach(el => {
 /* ─────────────────────────────────────────────
    PROJECT CARDS REVEAL ON SCROLL
    ───────────────────────────────────────────── */
-const projCards   = document.querySelectorAll('.proj-reveal');
-const projObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-    else entry.target.classList.remove('visible');
+const projRevealEls   = document.querySelectorAll('.proj-reveal');
+const projRevealState = Array.from(projRevealEls).map(() => ({ rotX:42, scale:0.88, opacity:0 }));
+
+function projRevealRAF() {
+  projRevealEls.forEach((el, i) => {
+    const s = projRevealState[i];
+    const vh = window.innerHeight;
+    const rect = el.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, (vh - rect.top) / (rect.height * 0.85)));
+    const tRotX = 42*(1-p), tScale = 0.88+0.12*p, tOp = Math.min(1,p*1.4);
+    s.rotX    += (tRotX  - s.rotX)    * 0.10;
+    s.scale   += (tScale - s.scale)   * 0.10;
+    s.opacity += (tOp    - s.opacity) * 0.10;
+    el.style.transform = `rotateX(${s.rotX.toFixed(3)}deg) scale(${s.scale.toFixed(4)})`;
+    el.style.opacity   = s.opacity.toFixed(4);
   });
-}, { threshold: 0.12 });
-projCards.forEach(card => projObserver.observe(card));
+  requestAnimationFrame(projRevealRAF);
+}
+projRevealRAF();
+
+
+/* ─────────────────────────────────────────────
+   PROJECT CARD — VIEW BUTTON COLOUR
+   Inject CSS only. Green default, blue on :hover.
+   The button has pointer-events:auto when card
+   is hovered (from existing CSS), so :hover works.
+   ───────────────────────────────────────────── */
+(function () {
+  const s = document.createElement('style');
+  s.textContent = `
+    /* Green by default */
+    .view-circle {
+      background: var(--green) !important;
+      color: var(--black) !important;
+      overflow: hidden;
+    }
+    /* Blue ripple fill on direct hover */
+    .view-circle::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: var(--blue);
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(.22,.61,.36,1), opacity 0.4s ease;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .view-circle:hover::after {
+      transform: scale(1);
+      opacity: 1;
+    }
+    /* Keep overlay subtle — no grey tint */
+    .proj-card:hover .proj-card-overlay {
+      background: rgba(0,0,0,0.25) !important;
+    }
+  `;
+  document.head.appendChild(s);
+})();
 
 
 /* ─────────────────────────────────────────────
    PROJECT CARD — MAGNETIC VIEW BUTTON
+   *** ORIGINAL WORKING CODE — NOT CHANGED ***
    ───────────────────────────────────────────── */
 document.querySelectorAll('.proj-card').forEach(card => {
   const btn = card.querySelector('.view-circle');
@@ -456,11 +404,11 @@ document.querySelectorAll('.proj-card').forEach(card => {
     btn.style.transform = `translate(${currentX}px, ${currentY}px)`;
     rafId = requestAnimationFrame(animate);
   }
-  card.addEventListener('mouseenter', () => { card.classList.add('grey-hover');  rafId = requestAnimationFrame(animate); });
+  card.addEventListener('mouseenter', () => { card.classList.add('grey-hover'); rafId = requestAnimationFrame(animate); });
   card.addEventListener('mousemove',  (e) => {
     const rect = card.getBoundingClientRect();
-    targetX = e.clientX - rect.left  - btn.offsetWidth  / 2;
-    targetY = e.clientY - rect.top   - btn.offsetHeight / 2;
+    targetX = e.clientX - rect.left - btn.offsetWidth  / 2;
+    targetY = e.clientY - rect.top  - btn.offsetHeight / 2;
   });
   card.addEventListener('mouseleave', () => { card.classList.remove('grey-hover'); if (rafId) cancelAnimationFrame(rafId); });
 });
@@ -469,19 +417,18 @@ document.querySelectorAll('.proj-card').forEach(card => {
 /* ─────────────────────────────────────────────
    PROJECT CARD SCALE ON SCROLL
    ───────────────────────────────────────────── */
+const projCards     = document.querySelectorAll('.proj-card');
+const projCardScale = Array.from(projCards).map(() => 1);
 function handleProjectScroll() {
-  const cards = document.querySelectorAll('.proj-card');
   const vh = window.innerHeight;
-  cards.forEach(card => {
-    const rect       = card.getBoundingClientRect();
-    const cardCenter = rect.top + rect.height / 2;
-    const viewPos    = cardCenter / vh;
-    if (viewPos < 0.5 && viewPos > -0.3) {
-      const progress = Math.max(0, Math.min(1, (0.5 - viewPos) / 0.5));
-      card.style.transform = `scale(${1 - progress * 0.3})`;
-    } else if (viewPos >= 0.5) {
-      card.style.transform = 'scale(1)';
-    }
+  projCards.forEach((card, i) => {
+    const rect = card.getBoundingClientRect();
+    const viewPos = (rect.top + rect.height/2) / vh;
+    let ts = 1;
+    if (viewPos < 0.5 && viewPos > -0.3)
+      ts = 1 - Math.max(0, Math.min(1, (0.5-viewPos)/0.5)) * 0.04;
+    projCardScale[i] += (ts - projCardScale[i]) * 0.08;
+    card.style.transform = `scale(${projCardScale[i].toFixed(4)})`;
   });
   requestAnimationFrame(handleProjectScroll);
 }
@@ -508,7 +455,7 @@ if (footerSection && ftP1 && ftP2) {
     const mx = (e.clientX - rect.left - rect.width  / 2) * 0.12;
     const my = (e.clientY - rect.top  - rect.height / 2) * 0.12;
     ftP1.style.transform = `translate(${mx}px,${my}px) rotate(${-25+mx*0.05}deg)`;
-    ftP2.style.transform = `translate(${my}px,${mx}px) rotate(${10 +my*0.05}deg)`;
+    ftP2.style.transform = `translate(${my}px,${mx}px) rotate(${10+my*0.05}deg)`;
   });
   footerSection.addEventListener('mouseleave', () => {
     ftP1.style.transform = 'translate(0,0) rotate(-25deg)';
@@ -521,85 +468,55 @@ if (footerSection && ftP1 && ftP2) {
    VALUE PROPS — POSTBOX SCROLL ANIMATION
    ───────────────────────────────────────────── */
 (function () {
-  const SLOT_Y_FRAC  = 0.4069;
-  const SLOT_H_FRAC  = 0.424;
-  const SLOT_LX_FRAC = 0.02;
-
+  const SLOT_Y_FRAC = 0.4069, SLOT_H_FRAC = 0.424, SLOT_LX_FRAC = 0.02;
   const scene  = document.getElementById('postbox-scene');
   const track  = document.getElementById('val-track');
   const fill   = document.getElementById('mailbox-fill');
   if (!scene || !track) return;
-
   const wrapEl  = scene.querySelector('.postbox-wrap');
   const mailbox = scene.querySelector('.mailbox');
   const mbImg   = mailbox.querySelector('.mailbox-img');
   const cards   = Array.from(track.querySelectorAll('.val-card'));
 
   function getRenderedImageBounds() {
-    const mbR  = mailbox.getBoundingClientRect();
-    const natW = mbImg.naturalWidth  || 1;
-    const natH = mbImg.naturalHeight || 1;
-    const natR = natW / natH;
-    const cW   = mbR.width; const cH = mbR.height; const cR = cW / cH;
-    let iW, iH, offX, offY;
-    if (natR < cR) { iH=cH; iW=iH*natR; offX=cW-iW; offY=0; }
-    else           { iW=cW; iH=iW/natR; offX=0; offY=(cH-iH)/2; }
+    const mbR = mailbox.getBoundingClientRect();
+    const natW = mbImg.naturalWidth||1, natH = mbImg.naturalHeight||1;
+    const natR = natW/natH, cW = mbR.width, cH = mbR.height, cR = cW/cH;
+    let iW,iH,offX,offY;
+    if (natR<cR) { iH=cH; iW=iH*natR; offX=cW-iW; offY=0; }
+    else         { iW=cW; iH=iW/natR; offX=0; offY=(cH-iH)/2; }
     return { iW, iH, offX, offY, mbR };
   }
 
-  let cardW = 350, cardH = 200;
+  let cardW=350, cardH=200;
   function applyCardSizing() {
     if (window.innerWidth < 768) return;
     const vw = window.innerWidth;
-    const { iW, iH } = getRenderedImageBounds();
-
-    // Scale cards proportionally to the rendered postbox image
+    const { iH } = getRenderedImageBounds();
     cardH = Math.round(iH * SLOT_H_FRAC);
     cardW = Math.round(cardH);
-
-    // Responsive constraints based on actual viewport width
-    let minW, minH, maxW, maxH;
-    if (vw < 900) {
-      // Small tablets (768–899)
-      minW = 80;  minH = 80;
-      maxW = 180; maxH = 220;
-    } else if (vw < 1200) {
-      // Large tablets / small laptops (900–1199)
-      minW = 120; minH = 120;
-      maxW = 260; maxH = 320;
-    } else if (vw < 1440) {
-      // Standard laptops (1200–1439)
-      minW = 160; minH = 160;
-      maxW = 360; maxH = 440;
-    } else {
-      // Large screens (1440+)
-      minW = 180; minH = 180;
-      maxW = 420; maxH = 520;
-    }
-
+    let minW,minH,maxW,maxH;
+    if      (vw<900)  { minW=80;  minH=80;  maxW=180; maxH=220; }
+    else if (vw<1200) { minW=120; minH=120; maxW=260; maxH=320; }
+    else if (vw<1440) { minW=160; minH=160; maxW=360; maxH=440; }
+    else              { minW=180; minH=180; maxW=420; maxH=520; }
     cardW = Math.max(minW, Math.min(cardW, maxW));
     cardH = Math.max(minH, Math.min(cardH, maxH));
-    cards.forEach(c => { c.style.width = cardW+'px'; c.style.height = cardH+'px'; });
-
-    const { iH: iH2, offY, mbR } = getRenderedImageBounds();
+    cards.forEach(c => { c.style.width=cardW+'px'; c.style.height=cardH+'px'; });
+    const { iH:iH2, offY, mbR } = getRenderedImageBounds();
     const wrapR = wrapEl.getBoundingClientRect();
-    const slotCentreAbs = mbR.top + offY + iH2 * SLOT_Y_FRAC;
-    track.style.top = (slotCentreAbs - wrapR.top) + 'px';
+    track.style.top = (mbR.top + offY + iH2*SLOT_Y_FRAC - wrapR.top) + 'px';
   }
 
   function loop() {
     if (window.innerWidth >= 768) {
-      const { iW, iH, offX, offY, mbR } = getRenderedImageBounds();
+      const { iW, offX, mbR } = getRenderedImageBounds();
       const wrapR  = wrapEl.getBoundingClientRect();
-      const sceneH = scene.offsetHeight;
-      const vh     = window.innerHeight;
-      const progress = Math.max(0, Math.min(1, -scene.getBoundingClientRect().top / (sceneH - vh)));
-      const totalW   = cardW * cards.length;
-      const slotAbsLeft = mbR.left + offX + iW * SLOT_LX_FRAC;
-      const slotX  = slotAbsLeft - wrapR.left;
-      const startX = slotX;
-      const endX   = slotX - totalW + iW * 0.45;
-      const currX  = startX + (endX - startX) * progress;
+      const sceneH = scene.offsetHeight, vh = window.innerHeight;
+      const progress = Math.max(0, Math.min(1, -scene.getBoundingClientRect().top/(sceneH-vh)));
+      const totalW = cardW * cards.length;
+      const slotX  = mbR.left + offX + iW*SLOT_LX_FRAC - wrapR.left;
+      const currX  = slotX + (slotX - totalW + iW*0.45 - slotX) * progress;
       track.style.transform = `translateY(-50%) translateX(${currX}px)`;
       if (fill) {
         const fillLeft = slotX + cardW + 20;
@@ -613,14 +530,10 @@ if (footerSection && ftP1 && ftP2) {
   }
 
   function init() { applyCardSizing(); loop(); }
-  if (mbImg.complete && mbImg.naturalWidth > 0) { init(); }
+  if (mbImg.complete && mbImg.naturalWidth > 0) init();
   else { mbImg.addEventListener('load', init); setTimeout(init, 100); }
-
   let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(applyCardSizing, 80);
-  });
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(applyCardSizing, 80); });
 })();
 
 
@@ -634,21 +547,13 @@ if (footerSection && ftP1 && ftP2) {
     { el: footer.querySelector('.ft-top-left'),   delay: 0    },
     { el: footer.querySelector('.ft-top-right'),  delay: 0.13 },
     { el: footer.querySelector('.ft-logo-block'), delay: 0.24 },
-    ...Array.from(footer.querySelectorAll('.ft-col')).map((el, i) => ({ el, delay: 0.34 + i * 0.1 })),
+    ...Array.from(footer.querySelectorAll('.ft-col')).map((el,i) => ({ el, delay:0.34+i*0.1 })),
     { el: footer.querySelector('.ft-bottom'),     delay: 0.72 },
   ].filter(t => t.el);
-
-  targets.forEach(({ el, delay }) => {
-    el.classList.add('ft-reveal');
-    el.style.transitionDelay = `${delay}s`;
-  });
-
+  targets.forEach(({ el, delay }) => { el.classList.add('ft-reveal'); el.style.transitionDelay = `${delay}s`; });
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        targets.forEach(({ el }) => el.classList.add('ft-in'));
-        io.unobserve(entry.target);
-      }
+      if (entry.isIntersecting) { targets.forEach(({ el }) => el.classList.add('ft-in')); io.unobserve(entry.target); }
     });
   }, { threshold: 0.04 });
   io.observe(footer);
@@ -672,60 +577,32 @@ if (footerSection && ftP1 && ftP2) {
   mobCards.forEach(c => mobObs.observe(c));
 })();
 
+
 /* ─────────────────────────────────────────────
    MOBILE SERVICES — FIXED STACK ANIMATION
-   Paste at the END of your script.js
    ───────────────────────────────────────────── */
-
 (function () {
   function isMobile() { return window.innerWidth <= 767; }
-
   const sGrid = document.querySelector('.s-grid');
   if (!sGrid) return;
-
   const cards = Array.from(sGrid.querySelectorAll('.s-card'));
   if (!cards.length) return;
-
-  // How much each buried card shrinks (0.92 = subtle, keeps top edge flush)
-  const MIN_SCALE = 0.92;
-  // Pixels of scroll past sticky point before card reaches full shrink
-  const SHRINK_RANGE = 200;
-
+  const MIN_SCALE = 0.92, SHRINK_RANGE = 200;
   function updateStack() {
-    if (!isMobile()) {
-      cards.forEach(c => { c.style.transform = ''; });
-      return;
-    }
-
+    if (!isMobile()) { cards.forEach(c => { c.style.transform = ''; }); return; }
     cards.forEach((card) => {
-      const rect      = card.getBoundingClientRect();
-      const stickyTop = 30; // must match CSS top value
-
-      // How many px has this card been scrolled PAST its sticky position
-      const buried = stickyTop - rect.top;
-
+      const buried = 30 - card.getBoundingClientRect().top;
       if (buried > 0) {
-        // Card is pinned — shrink it slightly so new card looks "on top"
-        const progress = Math.min(buried / SHRINK_RANGE, 1);
-        const scale    = 1 - (1 - MIN_SCALE) * progress;
-
-        // translateY keeps the TOP EDGE flush with the sticky position
-        // so the incoming card fully covers the top of the buried card
-        card.style.transform = `scale(${scale.toFixed(4)})`;
+        card.style.transform = `scale(${(1-(1-MIN_SCALE)*Math.min(buried/SHRINK_RANGE,1)).toFixed(4)})`;
       } else {
         card.style.transform = 'scale(1)';
       }
     });
   }
-
   let ticking = false;
   window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => { updateStack(); ticking = false; });
-      ticking = true;
-    }
-  }, { passive: true });
-
-  window.addEventListener('resize', updateStack, { passive: true });
+    if (!ticking) { requestAnimationFrame(() => { updateStack(); ticking=false; }); ticking=true; }
+  }, { passive:true });
+  window.addEventListener('resize', updateStack, { passive:true });
   updateStack();
 })();
