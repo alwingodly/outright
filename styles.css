@@ -1686,7 +1686,8 @@ p {
     top: 80px;
     /* Cards start fully visible bottom padding */
     padding: 24px 24px 28px;
-    min-height: 220px;
+    justify-content: end;
+    min-height: 280px;
     margin-bottom: 0;
     will-change: transform;
     transform-origin: top center;
