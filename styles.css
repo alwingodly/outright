@@ -1273,7 +1273,6 @@ p {
 @media (min-width: 768px) and (max-width: 1199px) {
   .postbox-scene {
     height: 260vh;
-    background: #fd0;
   }
   .mailbox {
     height: 50vh;
