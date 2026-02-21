@@ -75,6 +75,14 @@
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       document.documentElement.classList.add('hero-arrive');
+
+      // After arrival animation finishes, remove CSS transitions from particles
+      // so the JS parallax mousemove can control them freely without lag
+      setTimeout(() => {
+        document.querySelectorAll('.hero .p1, .hero .p2, .hero .p3').forEach(p => {
+          p.style.transition = 'none';
+        });
+      }, 1800); // wait for longest arrival animation to complete
     });
   });
 })();
@@ -323,23 +331,55 @@ counters.forEach(c => counterObs.observe(c));
 
 
 /* ─────────────────────────────────────────────
-   HERO PARTICLE PARALLAX
+   HERO PARTICLE PARALLAX — SMOOTH RAF LOOP
+   Movement pattern:
+   Mouse RIGHT  → Strategy LEFT,  Marketing RIGHT, Proven Success UP
+   Mouse LEFT   → Strategy RIGHT, Marketing LEFT,  Proven Success DOWN
+   Mouse UP     → Strategy DOWN,  Marketing UP,    Proven Success LEFT
+   Mouse DOWN   → Strategy UP,    Marketing DOWN,  Proven Success RIGHT
    ───────────────────────────────────────────── */
 const hero      = document.querySelector('.hero');
 const particles = document.querySelectorAll('.hero .p1,.hero .p2,.hero .p3');
-if (hero) {
+if (hero && particles.length) {
+  const STRENGTH = 0.06;
+  const LERP     = 0.05;
+
+  let targetMX = 0, targetMY = 0;
+  let currentMX = 0, currentMY = 0;
+  let heroRaf = null;
+
+  function heroParallaxLoop() {
+    // Smooth interpolation toward target
+    currentMX += (targetMX - currentMX) * LERP;
+    currentMY += (targetMY - currentMY) * LERP;
+
+    const mx = currentMX;
+    const my = currentMY;
+
+    // p1 = Strategy: opposite direction
+    if (particles[0]) particles[0].style.transform = `translate(${-mx}px,${-my}px) rotate(${-30 + mx * 0.03}deg)`;
+    // p2 = Proven Success: perpendicular (mouse right → up, mouse down → right)
+    if (particles[1]) particles[1].style.transform = `translate(${-my}px,${mx}px) rotate(${20 + my * 0.03}deg)`;
+    // p3 = Marketing: same direction as mouse
+    if (particles[2]) particles[2].style.transform = `translate(${mx}px,${my}px) rotate(${-15 + mx * 0.03}deg)`;
+
+    heroRaf = requestAnimationFrame(heroParallaxLoop);
+  }
+
+  // Start loop immediately — always running for instant response
+  heroRaf = requestAnimationFrame(heroParallaxLoop);
+
   hero.addEventListener('mousemove', (e) => {
     const rect = hero.getBoundingClientRect();
-    const mx = (e.clientX - rect.left - rect.width  / 2) * 0.12;
-    const my = (e.clientY - rect.top  - rect.height / 2) * 0.12;
-    if (particles[0]) particles[0].style.transform = `translate(${mx}px,${my}px) rotate(${-30 + mx * 0.05}deg)`;
-    if (particles[1]) particles[1].style.transform = `translate(${my}px,${mx}px) rotate(${20  + my * 0.05}deg)`;
-    if (particles[2]) particles[2].style.transform = `translate(${-my}px,${mx}px) rotate(${-15+ mx * 0.05}deg)`;
+    targetMX = (e.clientX - rect.left - rect.width  / 2) * STRENGTH;
+    targetMY = (e.clientY - rect.top  - rect.height / 2) * STRENGTH;
   });
+
   hero.addEventListener('mouseleave', () => {
-    if (particles[0]) particles[0].style.transform = 'translate(0,0) rotate(-30deg)';
-    if (particles[1]) particles[1].style.transform = 'translate(0,0) rotate(20deg)';
-    if (particles[2]) particles[2].style.transform = 'translate(0,0) rotate(-15deg)';
+    targetMX = 0;
+    targetMY = 0;
+    // RAF loop keeps running and will smoothly ease back to 0
+    // No need to cancel — it auto-settles
   });
 }
 
@@ -510,15 +550,37 @@ if (footerSection && ftP1 && ftP2) {
   let cardW = 350, cardH = 200;
   function applyCardSizing() {
     if (window.innerWidth < 768) return;
+    const vw = window.innerWidth;
     const { iW, iH } = getRenderedImageBounds();
+
+    // Scale cards proportionally to the rendered postbox image
     cardH = Math.round(iH * SLOT_H_FRAC);
     cardW = Math.round(cardH);
-    const isTablet = window.innerWidth < 1200;
-    const minW = isTablet ? 100 : 180; const minH = isTablet ? 100 : 180;
-    const maxW = isTablet ? 280 : 420; const maxH = isTablet ? 320 : 520;
+
+    // Responsive constraints based on actual viewport width
+    let minW, minH, maxW, maxH;
+    if (vw < 900) {
+      // Small tablets (768–899)
+      minW = 80;  minH = 80;
+      maxW = 180; maxH = 220;
+    } else if (vw < 1200) {
+      // Large tablets / small laptops (900–1199)
+      minW = 120; minH = 120;
+      maxW = 260; maxH = 320;
+    } else if (vw < 1440) {
+      // Standard laptops (1200–1439)
+      minW = 160; minH = 160;
+      maxW = 360; maxH = 440;
+    } else {
+      // Large screens (1440+)
+      minW = 180; minH = 180;
+      maxW = 420; maxH = 520;
+    }
+
     cardW = Math.max(minW, Math.min(cardW, maxW));
     cardH = Math.max(minH, Math.min(cardH, maxH));
     cards.forEach(c => { c.style.width = cardW+'px'; c.style.height = cardH+'px'; });
+
     const { iH: iH2, offY, mbR } = getRenderedImageBounds();
     const wrapR = wrapEl.getBoundingClientRect();
     const slotCentreAbs = mbR.top + offY + iH2 * SLOT_Y_FRAC;
