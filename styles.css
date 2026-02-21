@@ -889,7 +889,7 @@ p {
   padding: 30px 24px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 6px;
   border: 1px solid #eee;
 }
 .testi-top {
@@ -1792,5 +1792,310 @@ p {
   .man-inline {
     width: 44px;
     height: 52px;
+  }
+}
+
+
+
+
+/* =========================================================
+   TESTIMONIALS — 2-ROW BRICK MASONRY
+   Replace ALL existing testimonial CSS with this.
+   ========================================================= */
+
+.testimonials {
+  padding: 0 0 120px;
+  overflow: hidden;
+}
+
+/* ---- Header ---- */
+.testi-head {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 730px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+}
+.testi-head .sub {
+  color: var(--orange);
+  font-size: 16px;
+}
+.testi-head h2 {
+  font-size: 72px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--black);
+}
+.testi-head .desc {
+  max-width: 600px;
+}
+
+/* ---- Scroll wrapper ---- */
+.testi-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.testi-scroll {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  animation: scrollTesti 60s linear infinite;
+  width: max-content;
+  --scroll-dist: -2150px;
+}
+.testi-wrap:hover .testi-scroll {
+  animation-play-state: paused;
+}
+
+@keyframes scrollTesti {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(var(--scroll-dist)); }
+}
+
+/* ---- Column: 2 cards stacked ---- */
+.testi-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 420px;
+}
+
+/* ---- Card base — NO BORDER ---- */
+.testi-card {
+  background: var(--light-white);
+  border-radius: 20px;
+  padding-right: 20px;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+/* =============================================
+   SMALL CARD — inline: [avatar | name+role] → quote
+   ============================================= */
+.testi-small-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.testi-small-top .testi-avatar {
+  margin-bottom: 0;
+}
+.testi-small .testi-meta {
+  display: flex;
+  flex-direction: column;
+}
+.testi-small .testi-meta .testi-name {
+  margin-bottom: 1px;
+}
+.testi-small .testi-meta .testi-role {
+  margin-bottom: 0;
+}
+
+/* =============================================
+   BIG CARD — stacked: avatar → name → role → quote
+   Tight spacing between avatar/name/role
+   ============================================= */
+.testi-big .testi-avatar {
+  margin-bottom: 10px;
+}
+.testi-big .testi-name {
+  margin-bottom: 2px;
+}
+.testi-big .testi-role {
+  margin-bottom: 32px;
+}
+
+/* ---- Avatar ---- */
+.testi-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Anton", sans-serif;
+  font-size: 17px;
+  color: var(--black);
+  overflow: hidden;
+}
+
+/* ---- Name ---- */
+.testi-name {
+  font-family: "Anton", sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  color: var(--black);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Role ---- */
+.testi-role {
+  font-size: 18px;
+  color: var(--grey);
+  line-height: 1.35;
+}
+
+/* ---- Quote ---- */
+.testi-quote {
+  color: var(--black);
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Fade overlays ---- */
+.testi-fade-l,
+.testi-fade-r {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  z-index: 2;
+  pointer-events: none;
+}
+.testi-fade-l {
+  left: 0;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+.testi-fade-r {
+  right: 0;
+  background: linear-gradient(270deg, #fff, transparent);
+}
+
+
+/* ===================
+   RESPONSIVE
+   =================== */
+
+@media (max-width: 1199px) {
+  .testi-col {
+    width: 380px;
+  }
+}
+
+@media (max-width: 991px) {
+  .testi-head h2 {
+    font-size: 56px !important;
+  }
+  .testi-scroll {
+    gap: 8px;
+  }
+  .testi-col {
+    width: 340px;
+    gap: 8px;
+  }
+  .testi-card {
+    padding: 22px 20px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 767px) {
+  .testimonials {
+    padding: 0 0 80px;
+  }
+  .testi-head {
+    margin-bottom: 50px;
+  }
+  .testi-head h2 {
+    font-size: 44px !important;
+  }
+  .testi-scroll {
+    gap: 6px;
+    animation-duration: 45s;
+  }
+  .testi-col {
+    width: 260px;
+    gap: 6px;
+  }
+  .testi-card {
+    padding: 18px 16px;
+    border-radius: 12px;
+  }
+  .testi-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+  }
+  .testi-big .testi-avatar {
+    margin-bottom: 8px;
+  }
+  .testi-small-top {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .testi-name {
+    font-size: 16px;
+  }
+  .testi-role {
+    font-size: 13px;
+  }
+  .testi-big .testi-role {
+    margin-bottom: 12px;
+  }
+  .testi-quote {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .testi-fade-l,
+  .testi-fade-r {
+    width: 60px;
+  }
+}
+
+@media (max-width: 479px) {
+  .testi-head h2 {
+    font-size: 36px !important;
+  }
+  .testi-scroll {
+    gap: 5px;
+    animation-duration: 35s;
+  }
+  .testi-col {
+    width: 220px;
+    gap: 5px;
+  }
+  .testi-card {
+    padding: 16px 14px;
+    border-radius: 10px;
+  }
+  .testi-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 13px;
+  }
+  .testi-big .testi-avatar {
+    margin-bottom: 6px;
+  }
+  .testi-small-top {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .testi-name {
+    font-size: 14px;
+  }
+  .testi-role {
+    font-size: 12px;
+  }
+  .testi-big .testi-role {
+    margin-bottom: 10px;
+  }
+  .testi-quote {
+    font-size: 13px;
+  }
+  .testi-fade-l,
+  .testi-fade-r {
+    width: 40px;
   }
 }
