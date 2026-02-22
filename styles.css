@@ -1245,15 +1245,15 @@ p {
 .mailbox {
   position: absolute;
   right: 20px;
-  top: 0;
-  height: 100vh;
+  bottom: 0;
+  width: 30vw;
   z-index: 5;
   pointer-events: none;
   display: block;
 }
 .mailbox-img {
   height: 100%;
-  width: auto;
+  /* width: auto; */
   display: block;
 }
 .mailbox-fill {
@@ -1339,8 +1339,8 @@ p {
     height: 260vh;
   }
   .mailbox {
-    height: 40vh;
-    top: 60vh;
+    width: 30vw;
+    right: 30vw;
     right: 10px;
   }
   .val-track .val-card {
