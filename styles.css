@@ -1443,17 +1443,19 @@ p {
   padding: 6px 18px;
   border-radius: 8px;
 }
+
 .ft-top-right {
   width: 33.5%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  /* gap: 16px; */
   padding-top: 0;
 }
 .ft-top-right > p {
   color: rgba(255, 255, 255, 0.68);
   font-size: 18px;
   line-height: 1.4;
+  margin-bottom: 24px;
 }
 .ft-input-wrap {
   position: relative;
@@ -1502,7 +1504,7 @@ p {
   display: grid;
   grid-template-columns: 4.2fr 1.1fr 1.1fr 1.1fr 1.1fr;
   gap: 20px;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   align-items: start;
 }
 .ft-logo-block {
@@ -1554,11 +1556,9 @@ p {
   color: var(--green);
 }
 .ft-bottom {
-  color: rgba(255, 255, 255, 0.35);
+  color: #fff;
   text-align: center;
-  font-size: 14px;
-  padding-top: 30px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 18px;
 }
 .ft-reveal {
   opacity: 0;
@@ -1635,7 +1635,25 @@ p {
   .particle {
     display: none;
   }
+
+  .ft-top-right {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+  }
+
+  .ft-top-left {
+    flex-shrink: 0;
+    width: 100%;
+  }
+  .footer {
+    padding: 100px 0 30px;
+    background: var(--black);
+    overflow: hidden;
+  }
 }
+
 @media (max-width: 767px) {
   .hero {
     padding: 120px 0 80px;
@@ -1667,6 +1685,7 @@ p {
   .ft-main {
     grid-template-columns: 1fr 1fr;
     gap: 24px 40px;
+    margin-bottom: 20px;
   }
   .cookie {
     bottom: 20px;
@@ -1758,6 +1777,19 @@ p {
   .s-card.stacked-under {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   }
+
+  .ft-top-right > p {
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+
+  .footer {
+    padding: 65px 0 30px;
+    background: var(--black);
+    overflow: hidden;
+  }
 }
 @media (max-width: 479px) {
   .hero {
@@ -1793,9 +1825,6 @@ p {
     height: 52px;
   }
 }
-
-
-
 
 /* =========================================================
    TESTIMONIALS — 2-ROW BRICK MASONRY
@@ -1848,8 +1877,12 @@ p {
 }
 
 @keyframes scrollTesti {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(var(--scroll-dist)); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(var(--scroll-dist));
+  }
 }
 
 /* ---- Column: 2 cards stacked ---- */
@@ -1870,8 +1903,6 @@ p {
   display: flex;
   flex-direction: column;
 }
-
-
 
 /* =============================================
    SMALL CARD — inline: [avatar | name+role] → quote
@@ -1969,7 +2000,6 @@ p {
   background: linear-gradient(270deg, #fff, transparent);
 }
 
-
 /* ===================
    RESPONSIVE
    =================== */
@@ -1994,7 +2024,6 @@ p {
 }
 
 @media (max-width: 767px) {
-  
   .testi-scroll {
     gap: 0px;
   }
