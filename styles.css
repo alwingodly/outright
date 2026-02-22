@@ -1246,7 +1246,7 @@ p {
   position: absolute;
   right: 20px;
   bottom: 0;
-  width: 30vw;
+  width: 50vw;
   z-index: 5;
   pointer-events: none;
   display: block;
@@ -1339,8 +1339,8 @@ p {
     height: 260vh;
   }
   .mailbox {
-    width: 30vw;
-    right: 30vw;
+    width: 50vw;
+    right: 50vw;
     right: 10px;
   }
   .val-track .val-card {
