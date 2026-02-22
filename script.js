@@ -519,10 +519,10 @@ if (footerSection && ftP1 && ftP2) {
       const currX  = slotX + (slotX - totalW + iW*0.45 - slotX) * progress;
       track.style.transform = `translateY(-50%) translateX(${currX}px)`;
       if (fill) {
-        const fillLeft = slotX + cardW + 20;
+        const fillLeft = window.innerWidth - window.innerWidth/20;
         fill.style.left   = fillLeft + 'px';
         fill.style.top    = (mbR.top - wrapR.top) + 'px';
-        fill.style.width  = (wrapR.width - fillLeft + 40) + 'px';
+        fill.style.width  = window.innerWidth/20 + 'px';
         fill.style.height = mbR.height + 'px';
       }
     }
