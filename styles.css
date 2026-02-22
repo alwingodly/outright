@@ -126,11 +126,20 @@ p {
   background: var(--green);
   color: var(--black);
   border-radius: 100px;
-  padding: 15px 26px;
   font-size: 16px;
   border: none;
   cursor: pointer;
   transition: transform 0.2s;
+  z-index: 3;
+  line-height: 1.5em;
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 24px;
+  text-decoration: none;
+  display: flex;
+  position: relative;
+  overflow: hidden;
 }
 .cta-btn:hover {
   transform: scale(1.04);
@@ -204,12 +213,27 @@ p {
   transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .p1 {
-  background: linear-gradient(#f8f8f8, #ffe357);
+  background-image: linear-gradient(#f8f8f8, #ffe357);
   color: #dca100;
+  background-color: #fffcc5;
   border: 1px solid #fd0;
-  top: 60px;
-  left: -60px;
-  box-shadow: 0 20px 20px #ffea001a;
+  border-radius: 7px;
+  position: absolute;
+  inset: 52px auto auto 11px;
+  overflow: hidden;
+  transform: rotate(-30deg);
+  box-shadow:
+    0 20px 20px #ffea001a,
+    0 9px 9px #ffea002b,
+    0 2px 5px #ffe90033;
+  position: absolute;
+  padding: 5px 15px;
+  font-size: 15px;
+  font-weight: 500;
+  pointer-events: none;
+  font-family: "Geist", sans-serif;
+  z-index: 3;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .p2 {
   background: linear-gradient(#e8e3e0, #ffc797);
@@ -218,19 +242,32 @@ p {
   top: 20px;
   right: -40px;
   box-shadow: 0 20px 12px #ff5e0014;
+  position: absolute;
+  border-radius: 7px;
+  padding: 5px 15px;
+  font-size: 15px;
+  font-weight: 500;
+  pointer-events: none;
+  font-family: "Geist", sans-serif;
+  z-index: 3;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .p3 {
-  background: linear-gradient(
-    135deg,
-    rgba(180, 155, 225, 0.75),
-    rgba(145, 100, 210, 0.85)
-  );
-  color: #fff;
-  border: 1px solid rgba(170, 130, 230, 0.4);
-  bottom: 40px;
-  right: -20px;
-  box-shadow: 0 20px 12px rgba(140, 100, 200, 0.12);
-  font-style: italic;
+  font-weight: 500;
+  background-image: linear-gradient(#fff3 34%, #a973e6cc);
+  border-radius: 7px;
+  padding: 5px 15px;
+  color: #ad73e6;
+  font-size: 16px;
+  background-color: #f4e8ff;
+  border: 1px solid #aa73e666;
+  position: absolute;
+  inset: auto 83px 74px auto;
+  transform: rotate(-15deg);
+  box-shadow:
+    0 20px 12px #ac73e614,
+    0 9px 9px #ac73e621,
+    0 2px 5px #ac73e626;
 }
 
 /* MAN INLINE PHOTO */
