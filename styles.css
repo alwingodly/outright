@@ -1548,7 +1548,7 @@ p {
 }
 .ft-main {
   display: grid;
-  grid-template-columns: 4.2fr 1.1fr 1.1fr 1.1fr 1.1fr;
+  grid-template-columns: 4.2fr 1.1fr 1.1fr;
   gap: 20px;
   margin-bottom: 40px;
   align-items: start;
